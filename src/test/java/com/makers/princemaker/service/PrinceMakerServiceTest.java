@@ -23,6 +23,7 @@ import com.makers.princemaker.dto.PrinceDetailDto;
 import com.makers.princemaker.entity.Prince;
 import com.makers.princemaker.exception.PrinceMakerException;
 import com.makers.princemaker.repository.PrinceRepository;
+import com.makers.princemaker.repository.WoundedPrinceRepository;
 
 /**
  * @author Snow
@@ -31,6 +32,10 @@ import com.makers.princemaker.repository.PrinceRepository;
 class PrinceMakerServiceTest {
 	@Mock
 	private PrinceRepository princeRepository;
+
+	// 코틀린은 기본이 null 을 허용하지 않아서 안써도 모킹을 해줘야 한다.
+	@Mock
+	private WoundedPrinceRepository woundedPrinceRepository;
 
 	@InjectMocks
 	private PrinceMakerService princeMakerService;
