@@ -1,134 +1,148 @@
-package com.makers.princemaker.service;
+package com.makers.princemaker.service
 
-import static com.makers.princemaker.constant.PrinceMakerConstant.*;
-import static com.makers.princemaker.entity.PrinceMock.*;
-import static com.makers.princemaker.type.PrinceLevel.*;
-import static com.makers.princemaker.type.SkillType.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.makers.princemaker.code.PrinceMakerErrorCode;
-import com.makers.princemaker.dto.CreatePrince;
-import com.makers.princemaker.dto.PrinceDetailDto;
-import com.makers.princemaker.entity.Prince;
-import com.makers.princemaker.exception.PrinceMakerException;
-import com.makers.princemaker.repository.PrinceRepository;
-import com.makers.princemaker.repository.WoundedPrinceRepository;
+import com.makers.princemaker.code.PrinceMakerErrorCode
+import com.makers.princemaker.code.StatusCode
+import com.makers.princemaker.constant.PrinceMakerConstant
+import com.makers.princemaker.dto.CreatePrince
+import com.makers.princemaker.entity.Prince
+import com.makers.princemaker.entity.PrinceMock
+import com.makers.princemaker.exception.PrinceMakerException
+import com.makers.princemaker.repository.PrinceRepository
+import com.makers.princemaker.repository.WoundedPrinceRepository
+import com.makers.princemaker.type.PrinceLevel
+import com.makers.princemaker.type.SkillType
+import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.slot
+import io.mockk.verify
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.*
+import java.util.*
 
 /**
  * @author Snow
  */
-@ExtendWith(MockitoExtension.class)
-class PrinceMakerServiceTest {
-	@Mock
-	private PrinceRepository princeRepository;
+@ExtendWith(MockKExtension::class)
+internal class PrinceMakerServiceTest {
+    @RelaxedMockK
+    lateinit var princeRepository: PrinceRepository
 
-	// 코틀린은 기본이 null 을 허용하지 않아서 안써도 모킹을 해줘야 한다.
-	@Mock
-	private WoundedPrinceRepository woundedPrinceRepository;
+    // 코틀린은 기본이 null 을 허용하지 않아서 안써도 모킹을 해줘야 한다.
+    @MockK
+    lateinit var woundedPrinceRepository: WoundedPrinceRepository
 
-	@InjectMocks
-	private PrinceMakerService princeMakerService;
+    @InjectMockKs
+    lateinit var princeMakerService: PrinceMakerService
 
-	@Test
-	void getPrinceTest() {
-		//given
-		Prince juniorPrince =
-			createPrince(JUNIOR_PRINCE, INTELLECTUAL,
-				MAX_JUNIOR_EXPERIENCE_YEARS, "princeId");
-		given(princeRepository.findByPrinceId(anyString()))
-			.willReturn(Optional.of(juniorPrince));
+    @Test
+    fun princeTest(): Unit {
+        //given
+        val juniorPrince = PrinceMock.createPrince(
+            PrinceLevel.JUNIOR_PRINCE, SkillType.INTELLECTUAL,
+            PrinceMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS, "princeId"
+        )
+        every { princeRepository.findByPrinceId(any()) } returns Optional.of(juniorPrince)
 
-		//when
-		PrinceDetailDto prince = princeMakerService.getPrince("princeId");
+        //when
+        val prince = princeMakerService.getPrince("princeId")
 
-		//then
-		assertEquals(JUNIOR_PRINCE, prince.getPrinceLevel());
-		assertEquals(INTELLECTUAL, prince.getSkillType());
-		assertEquals(MAX_JUNIOR_EXPERIENCE_YEARS, prince.getExperienceYears());
-	}
+        //then
+        assertEquals(PrinceLevel.JUNIOR_PRINCE, prince.princeLevel)
+        assertEquals(SkillType.INTELLECTUAL, prince.skillType)
+        assertEquals(PrinceMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS, prince.experienceYears)
+    }
 
-	@Test
-	void createPrinceTest_success() {
-		//given
-		CreatePrince.Request request = new CreatePrince.Request(
-			MIDDLE_PRINCE,
-			INTELLECTUAL,
-			7,
-			"princeId",
-			"name",
-			28
-		);
+    @Test
+    fun createPrinceTest_success() {
+        //given
+        val request = CreatePrince.Request(
+            PrinceLevel.MIDDLE_PRINCE,
+            SkillType.INTELLECTUAL,
+            7,
+            "princeId",
+            "name",
+            28
+        )
+        val slot = slot<Prince>()
+        every { princeRepository.save(any()) } returns Prince(
+            id = null,
+            princeLevel = PrinceLevel.BABY_PRINCE,
+            skillType = SkillType.WARRIOR,
+            status = StatusCode.HEALTHY,
+            experienceYears = 1997,
+            princeId = "fugit",
+            name = "Julio Sexton",
+            age = 1533,
+            createdAt = null,
+            updatedAt = null
+        )
 
-		ArgumentCaptor<Prince> captor =
-			ArgumentCaptor.forClass(Prince.class);
+        //when
+        val (princeLevel, skillType, experienceYears) = princeMakerService.createPrince(request)
 
-		//when
-		CreatePrince.Response response = princeMakerService.createPrince(request);
+        //then
+        verify(exactly = 1) { princeRepository.save(capture(slot)) }
 
-		//then
-		verify(princeRepository, times(1))
-			.save(captor.capture());
-		Prince savedPrince = captor.getValue();
-		assertEquals(MIDDLE_PRINCE, savedPrince.getPrinceLevel());
-		assertEquals(INTELLECTUAL, savedPrince.getSkillType());
-		assertEquals(7, savedPrince.getExperienceYears());
+        val savedPrince = slot.captured
+        assertEquals(PrinceLevel.MIDDLE_PRINCE, savedPrince.princeLevel)
+        assertEquals(SkillType.INTELLECTUAL, savedPrince.skillType)
+        assertEquals(7, savedPrince.experienceYears)
+        assertEquals(PrinceLevel.MIDDLE_PRINCE, princeLevel)
+        assertEquals(SkillType.INTELLECTUAL, skillType)
+        assertEquals(7, experienceYears)
+    }
 
-		assertEquals(MIDDLE_PRINCE, response.getPrinceLevel());
-		assertEquals(INTELLECTUAL, response.getSkillType());
-		assertEquals(7, response.getExperienceYears().intValue());
-	}
+    @Test
+    fun createPrinceTest_failed_with_duplicated() {
+        //given
+        val juniorPrince = PrinceMock.createPrince(
+            PrinceLevel.JUNIOR_PRINCE,
+            SkillType.INTELLECTUAL,
+            PrinceMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS,
+            "princeId"
+        )
+        val request = CreatePrince.Request(
+            PrinceLevel.JUNIOR_PRINCE, SkillType.INTELLECTUAL,
+            3,
+            "princeId",
+            "name",
+            28
+        )
+        every { princeRepository.findByPrinceId(any()) } returns Optional.of(juniorPrince)
 
-	@Test
-	void createPrinceTest_failed_with_duplicated() {
-		//given
-		Prince juniorPrince =
-			createPrince(JUNIOR_PRINCE, INTELLECTUAL, MAX_JUNIOR_EXPERIENCE_YEARS, "princeId");
-		CreatePrince.Request request = new CreatePrince.Request(
-			JUNIOR_PRINCE,
-			INTELLECTUAL,
-			3,
-			"princeId",
-			"name",
-			28);
-		given(princeRepository.findByPrinceId(anyString()))
-			.willReturn(Optional.of(juniorPrince));
+        //when
+        val exception = assertThrows(
+            PrinceMakerException::class.java
+        ) { princeMakerService.createPrince(request) }
+        //then
+        assertEquals(PrinceMakerErrorCode.DUPLICATED_PRINCE_ID, exception.princeMakerErrorCode)
+    }
 
-		//when
-		PrinceMakerException exception =
-			assertThrows(PrinceMakerException.class, () -> princeMakerService.createPrince(request));
-		//then
-		assertEquals(PrinceMakerErrorCode.DUPLICATED_PRINCE_ID, exception.getPrinceMakerErrorCode());
-	}
+    @Test
+    fun createPrinceTest_failed_with_invalid_experience() {
+        //given
+        val request = CreatePrince.Request(
+            PrinceLevel.KING, SkillType.INTELLECTUAL,
+            PrinceMakerConstant.MIN_KING_EXPERIENCE_YEARS - 3,
+            "princeId",
+            "name",
+            28
+        )
+        every { princeRepository.findByPrinceId(any()) } returns Optional.empty()
 
-	@Test
-	void createPrinceTest_failed_with_invalid_experience() {
-		//given
-		CreatePrince.Request request = new CreatePrince.Request(
-			KING,
-			INTELLECTUAL,
-			MIN_KING_EXPERIENCE_YEARS - 3,
-			"princeId",
-			"name",
-			28
-		);
-		given(princeRepository.findByPrinceId(anyString()))
-			.willReturn(Optional.empty());
-
-		//when
-		PrinceMakerException exception =
-			assertThrows(PrinceMakerException.class, () -> princeMakerService.createPrince(request));
-		//then
-		assertEquals(PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH, exception.getPrinceMakerErrorCode());
-	}
+        //when
+        val exception = assertThrows(
+            PrinceMakerException::class.java
+        ) { princeMakerService.createPrince(request) }
+        //then
+        assertEquals(
+            PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH,
+            exception.princeMakerErrorCode
+        )
+    }
 }
