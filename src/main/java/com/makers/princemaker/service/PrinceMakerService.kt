@@ -40,8 +40,7 @@ class PrinceMakerService(
             request.age!!,
             null, null
         )
-        princeRepository.save(prince)
-        return fromEntity(prince)
+        return fromEntity(princeRepository.save(prince))
     }
 
     private fun validateCreatePrinceRequest(request: CreatePrince.Request) {
