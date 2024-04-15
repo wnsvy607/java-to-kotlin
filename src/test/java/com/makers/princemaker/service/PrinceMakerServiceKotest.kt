@@ -2,7 +2,7 @@ package com.makers.princemaker.service
 
 import com.makers.princemaker.code.PrinceMakerErrorCode.DUPLICATED_PRINCE_ID
 import com.makers.princemaker.constant.PrinceMakerConstant
-import com.makers.princemaker.dto.CreatePrince
+import com.makers.princemaker.controller.CreatePrince
 import com.makers.princemaker.entity.PrinceMock
 import com.makers.princemaker.exception.PrinceMakerException
 import com.makers.princemaker.repository.PrinceRepository

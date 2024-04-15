@@ -3,7 +3,7 @@ package com.makers.princemaker.service
 import com.makers.princemaker.code.PrinceMakerErrorCode
 import com.makers.princemaker.code.StatusCode
 import com.makers.princemaker.constant.PrinceMakerConstant
-import com.makers.princemaker.dto.CreatePrince
+import com.makers.princemaker.controller.CreatePrince
 import com.makers.princemaker.entity.Prince
 import com.makers.princemaker.entity.PrinceMock
 import com.makers.princemaker.exception.PrinceMakerException
@@ -71,13 +71,13 @@ internal class PrinceMakerServiceTest {
         val slot = slot<Prince>()
         every { princeRepository.save(any()) } returns Prince(
             id = null,
-            princeLevel = PrinceLevel.BABY_PRINCE,
-            skillType = SkillType.WARRIOR,
+            princeLevel = PrinceLevel.MIDDLE_PRINCE,
+            skillType = SkillType.INTELLECTUAL,
             status = StatusCode.HEALTHY,
-            experienceYears = 1997,
-            princeId = "fugit",
-            name = "Julio Sexton",
-            age = 1533,
+            experienceYears = 7,
+            princeId = "princeId",
+            name = "name",
+            age = 28,
             createdAt = null,
             updatedAt = null
         )

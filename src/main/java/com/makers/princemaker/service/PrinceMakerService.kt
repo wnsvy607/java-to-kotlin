@@ -3,8 +3,8 @@ package com.makers.princemaker.service
 import com.makers.princemaker.code.PrinceMakerErrorCode
 import com.makers.princemaker.code.StatusCode
 import com.makers.princemaker.constant.PrinceMakerConstant
-import com.makers.princemaker.dto.CreatePrince
-import com.makers.princemaker.dto.CreatePrince.Response.Companion.fromEntity
+import com.makers.princemaker.controller.CreatePrince
+import com.makers.princemaker.controller.toCreatePrinceResponse
 import com.makers.princemaker.dto.EditPrince
 import com.makers.princemaker.dto.PrinceDetailDto
 import com.makers.princemaker.dto.PrinceDto
@@ -40,7 +40,7 @@ class PrinceMakerService(
             request.age!!,
             null, null
         )
-        return fromEntity(princeRepository.save(prince))
+        return princeRepository.save(prince).toCreatePrinceResponse()
     }
 
     private fun validateCreatePrinceRequest(request: CreatePrince.Request) {
