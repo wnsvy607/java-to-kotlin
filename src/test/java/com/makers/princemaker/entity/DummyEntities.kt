@@ -3,15 +3,15 @@ package com.makers.princemaker.entity
 import com.makers.princemaker.code.StatusCode
 import com.makers.princemaker.code.StatusCode.HEALTHY
 import com.makers.princemaker.type.PrinceLevel
-import com.makers.princemaker.type.PrinceLevel.BABY_PRINCE
+import com.makers.princemaker.type.PrinceLevel.JUNIOR_PRINCE
 import com.makers.princemaker.type.SkillType
-import com.makers.princemaker.type.SkillType.WARRIOR
+import com.makers.princemaker.type.SkillType.INTELLECTUAL
 import java.time.LocalDateTime
 
 fun dummyPrince(
     id: Long? = 1L,
-    princeLevel: PrinceLevel = BABY_PRINCE,
-    skillType: SkillType = WARRIOR,
+    princeLevel: PrinceLevel = JUNIOR_PRINCE,
+    skillType: SkillType = INTELLECTUAL,
     status: StatusCode = HEALTHY,
     experienceYears: Int = 23,
     princeId: String = "princeId",

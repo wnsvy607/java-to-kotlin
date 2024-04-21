@@ -3,7 +3,9 @@ package com.makers.princemaker.service
 import com.makers.princemaker.code.PrinceMakerErrorCode.DUPLICATED_PRINCE_ID
 import com.makers.princemaker.constant.PrinceMakerConstant
 import com.makers.princemaker.controller.CreatePrince
+import com.makers.princemaker.dto.dummyCreatePrinceRequest
 import com.makers.princemaker.entity.PrinceMock
+import com.makers.princemaker.entity.dummyPrince
 import com.makers.princemaker.exception.PrinceMakerException
 import com.makers.princemaker.repository.PrinceRepository
 import com.makers.princemaker.repository.WoundedPrinceRepository
@@ -25,21 +27,12 @@ class PrinceMakerServiceKotest : BehaviorSpec({
     val princeMakerService = PrinceMakerService(princeRepository, woundedPrinceRepository)
 
     Given("프린스 생성을 진행할 때") {
-        val request = CreatePrince.Request(
-            MIDDLE_PRINCE,
-            INTELLECTUAL,
-            7,
-            "princeId",
-            "name",
-            28
-        )
-        val juniorPrince = PrinceMock.createPrince(
-            JUNIOR_PRINCE,
-            INTELLECTUAL,
-            PrinceMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS,
-            "princeId"
+        val request = dummyCreatePrinceRequest().copy(
+            skillType = INTELLECTUAL,
+            experienceYears = 3
         )
 
+        val juniorPrince = dummyPrince()
         every { princeRepository.save(any()) } returns juniorPrince
 
         When("princeId가 중복되지 않고 정상 요청이 오면") {
@@ -49,7 +42,7 @@ class PrinceMakerServiceKotest : BehaviorSpec({
                 assertSoftly(result) {
                     princeLevel shouldBe JUNIOR_PRINCE
                     skillType shouldBe INTELLECTUAL
-                    experienceYears shouldBe 5
+                    experienceYears shouldBe 23
                 }
             }
         }

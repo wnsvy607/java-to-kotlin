@@ -4,6 +4,7 @@ import com.makers.princemaker.code.PrinceMakerErrorCode
 import com.makers.princemaker.code.StatusCode
 import com.makers.princemaker.constant.PrinceMakerConstant
 import com.makers.princemaker.controller.CreatePrince
+import com.makers.princemaker.dto.dummyCreatePrinceRequest
 import com.makers.princemaker.entity.Prince
 import com.makers.princemaker.entity.PrinceMock
 import com.makers.princemaker.entity.dummyPrince
@@ -62,13 +63,10 @@ internal class PrinceMakerServiceTest {
     @Test
     fun createPrinceTest_success() {
         //given
-        val request = CreatePrince.Request(
-            PrinceLevel.MIDDLE_PRINCE,
-            SkillType.INTELLECTUAL,
-            7,
-            "princeId",
-            "name",
-            28
+        val request = dummyCreatePrinceRequest().copy(
+            princeLevel = PrinceLevel.MIDDLE_PRINCE,
+            skillType = SkillType.INTELLECTUAL,
+            experienceYears = 7
         )
         val slot = slot<Prince>()
         every { princeRepository.save(any()) } returns Prince(
