@@ -49,7 +49,7 @@ internal class PrinceMakerServiceTest {
             skillType = SkillType.INTELLECTUAL,
             experienceYears = PrinceMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS
         )
-        every { princeRepository.findByPrinceId(any()) } returns Optional.of(juniorPrince)
+        every { princeRepository.findByPrinceId(any()) } returns juniorPrince
 
         //when
         val prince = princeMakerService.getPrince("princeId")
@@ -68,6 +68,7 @@ internal class PrinceMakerServiceTest {
             skillType = SkillType.INTELLECTUAL,
             experienceYears = 7
         )
+        every { princeRepository.findByPrinceId(any()) } returns null
         val slot = slot<Prince>()
         every { princeRepository.save(any()) } returns Prince(
             id = null,
@@ -113,7 +114,7 @@ internal class PrinceMakerServiceTest {
             "name",
             28
         )
-        every { princeRepository.findByPrinceId(any()) } returns Optional.of(juniorPrince)
+        every { princeRepository.findByPrinceId(any()) } returns juniorPrince
 
         //when
         val exception = assertThrows(
@@ -133,7 +134,7 @@ internal class PrinceMakerServiceTest {
             "name",
             28
         )
-        every { princeRepository.findByPrinceId(any()) } returns Optional.empty()
+        every { princeRepository.findByPrinceId(any()) } returns null
 
         //when
         val exception = assertThrows(

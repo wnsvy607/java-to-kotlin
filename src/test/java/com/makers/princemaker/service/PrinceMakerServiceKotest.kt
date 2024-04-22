@@ -36,7 +36,7 @@ class PrinceMakerServiceKotest : BehaviorSpec({
         every { princeRepository.save(any()) } returns juniorPrince
 
         When("princeId가 중복되지 않고 정상 요청이 오면") {
-            every { princeRepository.findByPrinceId(any()) } returns Optional.empty()
+            every { princeRepository.findByPrinceId(any()) } returns null
             val result = princeMakerService.createPrince(request)
             Then("정상 응답") {
                 assertSoftly(result) {
@@ -48,7 +48,7 @@ class PrinceMakerServiceKotest : BehaviorSpec({
         }
 
         When("princeId가 중복되고 정상 요청이 오면") {
-            every { princeRepository.findByPrinceId(any()) } returns Optional.of(juniorPrince)
+            every { princeRepository.findByPrinceId(any()) } returns juniorPrince
 
             val ex = shouldThrow<PrinceMakerException> {
                 princeMakerService.createPrince(request)

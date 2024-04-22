@@ -1,21 +1,17 @@
-package com.makers.princemaker.repository;
+package com.makers.princemaker.repository
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import com.makers.princemaker.code.StatusCode;
-import com.makers.princemaker.entity.Prince;
+import com.makers.princemaker.code.StatusCode
+import com.makers.princemaker.entity.Prince
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
 /**
  * @author Snow
  */
 @Repository
-public interface PrinceRepository extends JpaRepository<Prince, Long> {
+interface PrinceRepository : JpaRepository<Prince, Long> {
 
-	Optional<Prince> findByPrinceId(String princeId);
+    fun findByPrinceId(princeId: String): Prince?
 
-	List<Prince> findByStatusEquals(StatusCode status);
+    fun findByStatusEquals(status: StatusCode): List<Prince>
 }
