@@ -38,8 +38,10 @@ class PrinceMakerService(
             request.name!!,
             request.age!!,
             null, null
-        )
-        return princeRepository.save(prince).toCreatePrinceResponse()
+        ).also {
+            princeRepository.save(it)
+        }
+        return prince.toCreatePrinceResponse()
     }
 
     private fun validateCreatePrinceRequest(request: CreatePrince.Request) {
@@ -82,11 +84,15 @@ class PrinceMakerService(
     ): PrinceDetailDto {
         val prince =
             princeRepository.findByPrinceId(princeId) ?: throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
-        prince.princeLevel = request.princeLevel
-        prince.skillType = request.skillType
-        prince.experienceYears = request.experienceYears
-        prince.name = request.name
-        prince.age = request.age
+
+        prince.apply {
+            this.princeLevel = request.princeLevel
+            this.princeLevel = request.princeLevel
+            this.skillType = request.skillType
+            this.experienceYears = request.experienceYears
+            this.name = request.name
+            this.age = request.age
+        }
         return PrinceDetailDto.fromEntity(prince)
     }
 
@@ -94,16 +100,16 @@ class PrinceMakerService(
     fun woundPrince(
         princeId: String
     ): PrinceDetailDto {
-        val prince =
-            princeRepository.findByPrinceId(princeId) ?: throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
+        return with(princeRepository.findByPrinceId(princeId)
+            ?: throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)) {
+            this.status = StatusCode.WOUNDED
 
-        prince.status = StatusCode.WOUNDED
-
-        val woundedPrince = WoundedPrince.builder()
-            .princeId(prince.princeId)
-            .name(prince.name)
-            .build()
-        woundedPrinceRepository.save(woundedPrince)
-        return PrinceDetailDto.fromEntity(prince)
+            val woundedPrince = WoundedPrince.builder()
+                .princeId(this.princeId)
+                .name(this.name)
+                .build()
+            woundedPrinceRepository.save(woundedPrince)
+            return PrinceDetailDto.fromEntity(this)
+        }
     }
 }
