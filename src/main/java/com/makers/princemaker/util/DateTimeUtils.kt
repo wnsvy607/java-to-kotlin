@@ -31,3 +31,7 @@ fun getLocalDateTimeString(localDateTime: LocalDateTime): String {
 /**
  * 두 방법 중 편한 것을 쓰면 된다.
  */
+
+fun LocalDateTime.toBirthDayString(): String = this.format(
+    DateTimeFormatter.ofPattern("yyyy-MM-dd 탄생")
+)
