@@ -64,10 +64,9 @@ class PrinceMakerService(
                 ).shouldNotTrue(LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH)
     }
 
-    @get:Transactional
-    val allPrince: List<PrinceDto>
-        get() = princeRepository.findByStatusEquals(StatusCode.HEALTHY)
-            .map { PrinceDto.fromEntity(it) }
+    @Transactional
+    fun getAllPrince(): List<PrinceDto> = princeRepository.findByStatusEquals(StatusCode.HEALTHY)
+        .map { PrinceDto.fromEntity(it) }
 
     @Transactional
     fun getPrince(princeId: String): PrinceDetailDto {
